@@ -17,15 +17,15 @@ class Paddle {
         if (this.y <= 0){this.y = 0;}
         createRectangle(this.x, this.y, this.width, this.height, this.colour);
     }
-    updatePoints() {
-        createText(((canvasWidth / 2) + this.x) / 2, 20, this.points, "black", "20px Arial");
-    }
+}
+
+function updatePoints(paddle) {
+    createText(((canvasWidth / 2) + paddle.x) / 2, 20, paddle.points, "black", "20px Arial");
 }
 
 // Initialise game components
 var userPaddle = new Paddle(10, 10, 20, 100);
 var compPaddle = new Paddle(canvasWidth - 30, 10, 20, 100);
-
 
 function createRectangle(x, y, width, height, colour) {
     context.fillStyle = colour;
@@ -53,8 +53,8 @@ function clearCanvas(){
 function render(){
     userPaddle.draw();
     compPaddle.draw();
-    userPaddle.updatePoints();
-    compPaddle.updatePoints();
+    updatePoints(userPaddle);
+    updatePoints(compPaddle);
 }
 
 document.addEventListener("keydown", event => {
