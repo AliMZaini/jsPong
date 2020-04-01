@@ -19,8 +19,9 @@ class Paddle {
     }
 }
 
+// Initialise game components
 var userPaddle = new Paddle(10, 10, 20, 100);
-var compPaddle = new Paddle(10, 10, 20, 100);
+var compPaddle = new Paddle(canvasWidth - 30, 10, 20, 100);
 
 function createRectangle(x, y, width, height, colour) {
     context.fillStyle = colour;
@@ -48,9 +49,15 @@ function clearCanvas(){
 document.addEventListener("keydown", event => {
     console.log(event.code);
     clearCanvas();
-    if (event.code === "KeyS" || event.code === "ArrowDown"){userPaddle.y++;}
-    if (event.code === "KeyW" || event.code === "ArrowUp"){userPaddle.y--;}
+    if (event.code === "KeyS"){userPaddle.y++;}
+    if (event.code === "ArrowDown"){compPaddle.y++;}
+
+    if (event.code === "KeyW"){userPaddle.y--;}
+    if (event.code === "ArrowUp"){compPaddle.y--;}
+
     userPaddle.draw();
+    compPaddle.draw();
 });
 
 userPaddle.draw();
+compPaddle.draw();
