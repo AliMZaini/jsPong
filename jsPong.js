@@ -34,10 +34,46 @@ class Ball {
         this.x += this.velocity[0];
         this.y += this.velocity[1];
         if (this.y >= canvasHeight - this.radius || this.y - this.radius <= 0) {this.velocity[1] = -this.velocity[1];}
+
+        for (var i = 0; i < paddles.length; i++){
+            var paddle = paddles[i];
+            if (checkCollision(paddle, this)){
+                paddle.points++;
+                this.velocity[0] = -this.velocity[0];
+                break;
+            }
+        }
+        if (this.x > canvasWidth || this.x < 0){
+            console.log("ball is out of canvas");
+            this.x = canvasWidth/2;
+            this.y = canvasHeight/2;
+        }
     }
     draw() {
         createCircle(this.x, this.y, this.radius, this.colour);
     }
+}
+
+/**
+ * Checks if ball and paddle have collided
+ * @param paddle object
+ * @param ball object
+ * @returns boolean if the ball and paddle have collided
+ */
+function checkCollision(paddle, ball){
+    /**
+    left of paddle must not touch right of ball
+    right of paddle must not touch left of ball
+    bottom of paddle must not touch top of ball
+    top of paddle must not touch bottom of ball
+
+    paddle.x < ball.x + ball.radius
+    paddle.x + paddle.width > ball.x - ball.radius
+    paddle.y + paddle.height > ball.y - ball.radius
+    paddle.y < ball.y + ball.radius
+     **/
+    console.log("collision:" + paddle.x < ball.x + ball.radius && paddle.x + paddle.width > ball.x - ball.radius && paddle.y + paddle.height > ball.y - ball.radius && paddle.y < ball.y + ball.radius);
+    return (paddle.x < ball.x + ball.radius && paddle.x + paddle.width > ball.x - ball.radius && paddle.y + paddle.height > ball.y - ball.radius && paddle.y < ball.y + ball.radius);
 }
 
 function updatePoints(paddle) {
@@ -46,7 +82,8 @@ function updatePoints(paddle) {
 
 // Initialise game components
 var userPaddle = new Paddle(10, 10, 20, 100);
-var compPaddle = new Paddle(canvasWidth - 30, 10, 20, 100);
+var compPaddle = new Paddle(canvasWidth - 30, 250, 20, 100);
+var paddles = [userPaddle, compPaddle];
 var ball = new Ball(canvasWidth/2, canvasHeight/2, 5,"black");
 
 function createRectangle(x, y, width, height, colour) {
@@ -73,7 +110,6 @@ function clearCanvas(){
 }
 
 function render(){
-    console.log("render");
     clearCanvas();
     ball.move();
     ball.draw();
@@ -95,5 +131,4 @@ document.addEventListener("keydown", event => {
 });
 
 const fps = 60;
-
 setInterval(render, 1000/fps);
