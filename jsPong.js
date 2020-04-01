@@ -3,6 +3,8 @@ const context = canvas.getContext("2d");
 const canvasWidth = document.getElementById("pongCanvas").getAttribute('width');
 const canvasHeight = document.getElementById("pongCanvas").getAttribute('height');
 
+const BACKGROUND_COLOUR = "#9dc6a7";
+
 class Paddle {
     constructor(x, y, width, height, colour, vertical) {
         this.x = x;
@@ -61,8 +63,7 @@ class Ball {
         this.y += this.velocity[1];
         //if (this.y >= canvasHeight - this.radius || this.y - this.radius <= 0) {this.velocity[1] = -this.velocity[1];} // this would make the ball bounce off the horizontal walls
 
-        for (var i = 0; i < paddles.length; i++){
-            var paddle = paddles[i];
+        for (let paddle of paddles){
             if (checkCollision(paddle, this)){
                 paddle.points++;
                 paddle.shorten(5);
@@ -83,37 +84,12 @@ class Ball {
     }
 }
 
-/**
- * Checks if ball and paddle have collided
- * @param paddle object
- * @param ball object
- * @returns boolean if the ball and paddle have collided
- */
-function checkCollision(paddle, ball){
-    /**
-    left of paddle must not touch right of ball
-    right of paddle must not touch left of ball
-    bottom of paddle must not touch top of ball
-    top of paddle must not touch bottom of ball
-
-    paddle.x < ball.x + ball.radius
-    paddle.x + paddle.width > ball.x - ball.radius
-    paddle.y + paddle.height > ball.y - ball.radius
-    paddle.y < ball.y + ball.radius
-     **/
-    console.log("collision:" + paddle.x < ball.x + ball.radius && paddle.x + paddle.width > ball.x - ball.radius && paddle.y + paddle.height > ball.y - ball.radius && paddle.y < ball.y + ball.radius);
-    return (paddle.x < ball.x + ball.radius && paddle.x + paddle.width > ball.x - ball.radius && paddle.y + paddle.height > ball.y - ball.radius && paddle.y < ball.y + ball.radius);
-}
-
-function updatePoints(paddle) {
-    createText((2 * paddle.x + paddle.width)/2 - 5, (2 * paddle.y + paddle.height)/2 + 5, paddle.points, "black", "20px Segoe UI");
-}
-
 // Initialise game components
-var leftPaddle = new Paddle(10, canvasHeight/2 - 50, 20, 100, "blue", true);
-var rightPaddle = new Paddle(canvasWidth - 30, canvasHeight/2 - 50, 20, 100, "red", true);
-var topPaddle = new Paddle(canvasWidth/2 - 50, 10, 100, 20,"green", false);
-var bottomPaddle = new Paddle(canvasWidth/2 - 50, canvasHeight - 30, 100, 20, "yellow", false);
+// TODO sizes should depend on the canvas size
+var leftPaddle = new Paddle(10, canvasHeight/2 - 50, 20, 100, "#a8e6cf", true);
+var rightPaddle = new Paddle(canvasWidth - 30, canvasHeight/2 - 50, 20, 100, "#ccedd2", true);
+var topPaddle = new Paddle(canvasWidth/2 - 50, 10, 100, 20,"#effcef", false);
+var bottomPaddle = new Paddle(canvasWidth/2 - 50, canvasHeight - 30, 100, 20, "#d1f5d3", false);
 
 var paddles = [leftPaddle, rightPaddle, topPaddle, bottomPaddle];
 
@@ -142,25 +118,50 @@ function createText(x, y, text, colour, style) {
 }
 
 function clearCanvas(){
-    createRectangle(0, 0, canvasWidth, canvasHeight, "white");
+    createRectangle(0, 0, canvasWidth, canvasHeight, BACKGROUND_COLOUR);
+}
+
+/**
+ * Checks if ball and paddle have collided
+ * @param paddle object
+ * @param ball object
+ * @returns boolean if the ball and paddle have collided
+ */
+function checkCollision(paddle, ball){
+    /**
+     left of paddle must not touch right of ball
+     right of paddle must not touch left of ball
+     bottom of paddle must not touch top of ball
+     top of paddle must not touch bottom of ball
+
+     paddle.x < ball.x + ball.radius
+     paddle.x + paddle.width > ball.x - ball.radius
+     paddle.y + paddle.height > ball.y - ball.radius
+     paddle.y < ball.y + ball.radius
+     **/
+    //console.log("collision:" + paddle.x < ball.x + ball.radius && paddle.x + paddle.width > ball.x - ball.radius && paddle.y + paddle.height > ball.y - ball.radius && paddle.y < ball.y + ball.radius);
+    return (paddle.x < ball.x + ball.radius && paddle.x + paddle.width > ball.x - ball.radius && paddle.y + paddle.height > ball.y - ball.radius && paddle.y < ball.y + ball.radius);
+}
+
+function updatePoints(paddle) {
+    createText((2 * paddle.x + paddle.width)/2 - 5, (2 * paddle.y + paddle.height)/2 + 5, paddle.points, "black", "20px Segoe UI");
 }
 
 function render(){
     clearCanvas();
-    for (var i = 0; i < balls.length; i++){
-        balls[i].move();
-        balls[i].draw();
+    for (let ball of balls){
+        ball.move();
+        ball.draw();
     }
-    for (var i = 0; i < paddles.length; i++){
-        paddles[i].draw();
-        // TODO have some way to show points for each of the four paddles
-        updatePoints(paddles[i]);
+    for (let paddle of paddles){
+        paddle.draw();
+        updatePoints(paddle);
     }
 }
 
 // TODO change listener
 document.addEventListener("keydown", event => {
-    console.log(event.code);
+    //console.log(event.code);
     if (event.code === "KeyS"){leftPaddle.y++;}
     if (event.code === "ArrowDown"){rightPaddle.y++;}
 
