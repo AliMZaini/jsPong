@@ -12,7 +12,9 @@ class Paddle {
         this.colour = "black";
         this.points = 0;
     }
-    draw(){
+    draw() {
+        if (this.y >= canvasHeight - this.height) {this.y = canvasHeight - this.height;}
+        if (this.y <= 0){this.y = 0;}
         createRectangle(this.x, this.y, this.width, this.height, this.colour);
     }
 }
