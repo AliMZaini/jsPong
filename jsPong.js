@@ -17,6 +17,10 @@ class Paddle {
         if (this.y <= 0){this.y = 0;}
         createRectangle(this.x, this.y, this.width, this.height, this.colour);
     }
+    shorten(length) {
+        this.height -= length;
+        this.y += length/2;
+    }
 }
 
 class Ball {
@@ -25,7 +29,7 @@ class Ball {
         this.y = y;
         this.radius = radius;
         this.colour = colour;
-        this.velocity = [3, 3]; // Velocity x & y components
+        this.velocity = [3, 0]; // Velocity x & y components
     }
     getSpeed(){
         return Math.sqrt(this.velocity[0] ** 2 + this.velocity[1]**2);
@@ -39,7 +43,9 @@ class Ball {
             var paddle = paddles[i];
             if (checkCollision(paddle, this)){
                 paddle.points++;
+                paddle.shorten(5);
                 this.velocity[0] = -this.velocity[0];
+                this.move();
                 break;
             }
         }
