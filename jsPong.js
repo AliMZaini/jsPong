@@ -54,12 +54,12 @@ class Ball {
         this.y = y;
         this.radius = radius;
         this.colour = colour;
-        this.velocity = velocity; // Velocity x & y components
+        this.velocity = velocity; // velocity is an array with an x & y component
     }
     move(){
         this.x += this.velocity[0];
         this.y += this.velocity[1];
-        //if (this.y >= canvasHeight - this.radius || this.y - this.radius <= 0) {this.velocity[1] = -this.velocity[1];}
+        //if (this.y >= canvasHeight - this.radius || this.y - this.radius <= 0) {this.velocity[1] = -this.velocity[1];} // this would make the ball bounce off the horizontal walls
 
         for (var i = 0; i < paddles.length; i++){
             var paddle = paddles[i];
@@ -106,7 +106,7 @@ function checkCollision(paddle, ball){
 }
 
 function updatePoints(paddle) {
-    createText(((canvasWidth / 2) + paddle.x) / 2, 20, paddle.points, "black", "20px Arial");
+    createText((2 * paddle.x + paddle.width)/2 - 5, (2 * paddle.y + paddle.height)/2 + 5, paddle.points, "black", "20px Segoe UI");
 }
 
 // Initialise game components
@@ -154,7 +154,7 @@ function render(){
     for (var i = 0; i < paddles.length; i++){
         paddles[i].draw();
         // TODO have some way to show points for each of the four paddles
-        //updatePoints(paddles[i]);
+        updatePoints(paddles[i]);
     }
 }
 
