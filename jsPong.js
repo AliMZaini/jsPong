@@ -14,14 +14,36 @@ class Paddle {
         this.points = 0;
     }
     draw() {
-        if (this.y >= canvasHeight - this.height) {this.y = canvasHeight - this.height;}
-        if (this.y <= 0){this.y = 0;}
+        // TODO pass by reference
+        if (this.vertical) {
+            if (this.y >= canvasHeight - this.height) {
+                this.y = canvasHeight - this.height;
+            }
+            if (this.y <= 0) {
+                this.y = 0;
+            }
+        }else {
+            if (this.x >= canvasWidth - this.width) {
+                this.x = canvasWidth - this.width;
+            }
+            if (this.x <= 0) {
+                this.x = 0;
+            }
+        }
         createRectangle(this.x, this.y, this.width, this.height, this.colour);
     }
     shorten(length) {
-        if (this.height - length > 0) {
-            this.height -= length;
-            this.y += length / 2;
+        // TODO pass by reference
+        if (this.vertical) {
+            if (this.height - length > 0) {
+                this.height -= length;
+                this.y += length / 2;
+            }
+        }else {
+            if (this.width - length > 0) {
+                this.width -= length;
+                this.x += length / 2;
+            }
         }
     }
 }
@@ -90,7 +112,6 @@ function updatePoints(paddle) {
 // Initialise game components
 var leftPaddle = new Paddle(10, canvasHeight/2 - 50, 20, 100, "blue", true);
 var rightPaddle = new Paddle(canvasWidth - 30, canvasHeight/2 - 50, 20, 100, "red", true);
-
 var topPaddle = new Paddle(canvasWidth/2 - 50, 10, 100, 20,"green", false);
 var bottomPaddle = new Paddle(canvasWidth/2 - 50, canvasHeight - 30, 100, 20, "yellow", false);
 
@@ -132,10 +153,12 @@ function render(){
     }
     for (var i = 0; i < paddles.length; i++){
         paddles[i].draw();
+        // TODO have some way to show points for each of the four paddles
         //updatePoints(paddles[i]);
     }
 }
 
+// TODO change listener
 document.addEventListener("keydown", event => {
     console.log(event.code);
     if (event.code === "KeyS"){leftPaddle.y++;}
@@ -143,6 +166,12 @@ document.addEventListener("keydown", event => {
 
     if (event.code === "KeyW"){leftPaddle.y--;}
     if (event.code === "ArrowUp"){rightPaddle.y--;}
+
+    if (event.code === "KeyD"){topPaddle.x++;}
+    if (event.code === "ArrowRight"){bottomPaddle.x++;}
+
+    if (event.code === "KeyA"){topPaddle.x--;}
+    if (event.code === "ArrowLeft"){bottomPaddle.x--;}
 
     render();
 });
