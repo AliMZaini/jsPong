@@ -4,12 +4,13 @@ const canvasWidth = document.getElementById("pongCanvas").getAttribute('width');
 const canvasHeight = document.getElementById("pongCanvas").getAttribute('height');
 
 class Paddle {
-    constructor(x, y, width, height) {
+    constructor(x, y, width, height, colour, vertical) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-        this.colour = "black";
+        this.colour = colour;
+        this.vertical = vertical;
         this.points = 0;
     }
     draw() {
@@ -18,26 +19,25 @@ class Paddle {
         createRectangle(this.x, this.y, this.width, this.height, this.colour);
     }
     shorten(length) {
-        this.height -= length;
-        this.y += length/2;
+        if (this.height - length > 0) {
+            this.height -= length;
+            this.y += length / 2;
+        }
     }
 }
 
 class Ball {
-    constructor(x, y, radius, colour) {
+    constructor(x, y, radius, velocity, colour) {
         this.x = x;
         this.y = y;
         this.radius = radius;
         this.colour = colour;
-        this.velocity = [3, 0]; // Velocity x & y components
-    }
-    getSpeed(){
-        return Math.sqrt(this.velocity[0] ** 2 + this.velocity[1]**2);
+        this.velocity = velocity; // Velocity x & y components
     }
     move(){
         this.x += this.velocity[0];
         this.y += this.velocity[1];
-        if (this.y >= canvasHeight - this.radius || this.y - this.radius <= 0) {this.velocity[1] = -this.velocity[1];}
+        //if (this.y >= canvasHeight - this.radius || this.y - this.radius <= 0) {this.velocity[1] = -this.velocity[1];}
 
         for (var i = 0; i < paddles.length; i++){
             var paddle = paddles[i];
@@ -49,6 +49,7 @@ class Ball {
                 break;
             }
         }
+
         if (this.x > canvasWidth || this.x < 0){
             console.log("ball is out of canvas");
             this.x = canvasWidth/2;
@@ -87,10 +88,18 @@ function updatePoints(paddle) {
 }
 
 // Initialise game components
-var userPaddle = new Paddle(10, 10, 20, 100);
-var compPaddle = new Paddle(canvasWidth - 30, 250, 20, 100);
-var paddles = [userPaddle, compPaddle];
-var ball = new Ball(canvasWidth/2, canvasHeight/2, 5,"black");
+var leftPaddle = new Paddle(10, canvasHeight/2 - 50, 20, 100, "blue", true);
+var rightPaddle = new Paddle(canvasWidth - 30, canvasHeight/2 - 50, 20, 100, "red", true);
+
+var topPaddle = new Paddle(canvasWidth/2 - 50, 10, 100, 20,"green", false);
+var bottomPaddle = new Paddle(canvasWidth/2 - 50, canvasHeight - 30, 100, 20, "yellow", false);
+
+var paddles = [leftPaddle, rightPaddle, topPaddle, bottomPaddle];
+
+var ballOne = new Ball(canvasWidth/2, canvasHeight/2, 5,[-3, -2], "blue");
+var ballTwo = new Ball(canvasWidth/2, canvasHeight/2, 5, [3, 2], "red");
+
+var balls = [ballOne, ballTwo];
 
 function createRectangle(x, y, width, height, colour) {
     context.fillStyle = colour;
@@ -117,21 +126,23 @@ function clearCanvas(){
 
 function render(){
     clearCanvas();
-    ball.move();
-    ball.draw();
-    userPaddle.draw();
-    compPaddle.draw();
-    updatePoints(userPaddle);
-    updatePoints(compPaddle);
+    for (var i = 0; i < balls.length; i++){
+        balls[i].move();
+        balls[i].draw();
+    }
+    for (var i = 0; i < paddles.length; i++){
+        paddles[i].draw();
+        //updatePoints(paddles[i]);
+    }
 }
 
 document.addEventListener("keydown", event => {
     console.log(event.code);
-    if (event.code === "KeyS"){userPaddle.y++;}
-    if (event.code === "ArrowDown"){compPaddle.y++;}
+    if (event.code === "KeyS"){leftPaddle.y++;}
+    if (event.code === "ArrowDown"){rightPaddle.y++;}
 
-    if (event.code === "KeyW"){userPaddle.y--;}
-    if (event.code === "ArrowUp"){compPaddle.y--;}
+    if (event.code === "KeyW"){leftPaddle.y--;}
+    if (event.code === "ArrowUp"){rightPaddle.y--;}
 
     render();
 });
