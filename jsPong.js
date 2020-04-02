@@ -29,7 +29,7 @@ class Paddle extends Component {
 
     move(forward) {
         // TODO pass by reference
-        // Checks if paddle is being moved off the canvas
+
         if (forward){ // forwards is towards +X/+Y
             if (this.vertical){
                 this.y += PADDLE_SPEED;
@@ -44,11 +44,36 @@ class Paddle extends Component {
             }
         }
 
+        //TODO for loop should go through 'paddles' with this paddle popped out.
+        // currently i'm just checking that there is only a single collision with this paddle (meaning that it only collided with itself)
+        var counter = 0;
         for (let paddle of paddles){
             if (checkCollision(this, paddle)){
-                return false;
+                counter++;
+                console.log("collision");
             }
         }
+        if (counter > 1){
+            console.log("more than one collision, so undoing move");
+            // if collision after moving, undo the move
+            // TODO instead of undoing, just move the paddle to be as close to the other as possible
+            if (forward){ // forwards is towards +X/+Y
+                if (this.vertical){
+                    this.y -= PADDLE_SPEED;
+                }else{
+                    this.x -= PADDLE_SPEED;
+                }
+            }else {
+                if (this.vertical){
+                    this.y += PADDLE_SPEED;
+                }else{
+                    this.x += PADDLE_SPEED;
+                }
+            }
+            return false;
+        }
+
+        // Checks if paddle is being moved off the canvas
         if (this.y >= canvasHeight - this.height) {
             this.y = canvasHeight - this.height;
         }
