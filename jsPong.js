@@ -14,10 +14,12 @@ class Component {
         this.width = width; // height/width refer to the distance from x/y to the maximum height/width of the component
         this.height = height;
     }
-    draw(){}
+
+    draw() {
+    }
 }
 
-class Paddle extends Component{
+class Paddle extends Component {
     constructor(x, y, width, height, colour, vertical) {
         super(x, y, width, height);
         this.colour = colour;
@@ -25,23 +27,44 @@ class Paddle extends Component{
         this.points = 0;
     }
 
-    draw() {
+    move(forward) {
         // TODO pass by reference
-        if (this.vertical) {
-            if (this.y >= canvasHeight - this.height) {
-                this.y = canvasHeight - this.height;
+        // Checks if paddle is being moved off the canvas
+        if (forward){ // forwards is towards +X/+Y
+            if (this.vertical){
+                this.y += PADDLE_SPEED;
+            }else{
+                this.x += PADDLE_SPEED;
             }
-            if (this.y <= 0) {
-                this.y = 0;
-            }
-        } else {
-            if (this.x >= canvasWidth - this.width) {
-                this.x = canvasWidth - this.width;
-            }
-            if (this.x <= 0) {
-                this.x = 0;
+        }else {
+            if (this.vertical){
+                this.y -= PADDLE_SPEED;
+            }else{
+                this.x -= PADDLE_SPEED;
             }
         }
+
+        for (let paddle of paddles){
+            if (checkCollision(this, paddle)){
+                return false;
+            }
+        }
+        if (this.y >= canvasHeight - this.height) {
+            this.y = canvasHeight - this.height;
+        }
+        if (this.y <= 0) {
+            this.y = 0;
+        }
+        if (this.x >= canvasWidth - this.width) {
+            this.x = canvasWidth - this.width;
+        }
+        if (this.x <= 0) {
+            this.x = 0;
+        }
+        return true;
+    }
+
+    draw() {
         createRectangle(this.x, this.y, this.width, this.height, this.colour);
     }
 
@@ -62,7 +85,7 @@ class Paddle extends Component{
     }
 }
 
-class Ball extends Component{
+class Ball extends Component {
     constructor(x, y, radius, velocity, colour) {
         super(x, y, radius, radius);
         this.radius = radius;
@@ -84,11 +107,15 @@ class Ball extends Component{
         }
 
         // If ball hits the borders, it bounces off
-        if (this.x > canvasWidth || this.x < 0) {this.velocity[0] = -this.velocity[0];}
-        if (this.y >= canvasHeight - this.radius || this.y - this.radius <= 0) {this.velocity[1] = -this.velocity[1];}
+        if (this.x > canvasWidth || this.x < 0) {
+            this.velocity[0] = -this.velocity[0];
+        }
+        if (this.y >= canvasHeight - this.radius || this.y - this.radius <= 0) {
+            this.velocity[1] = -this.velocity[1];
+        }
     }
 
-    collision(paddle){
+    collision(paddle) {
         // the velocity of the ball should change based on where it hit the paddle
         this.velocity[0] = -this.velocity[0];
         this.velocity[1] = -this.velocity[1];
@@ -143,10 +170,10 @@ function clearCanvas() {
  * @returns boolean returns true if the two components have collided
  */
 function checkCollision(componentA, componentB) {
-    return  componentA.x < componentB.x + componentB.width &&
-            componentA.x + componentA.width > componentB.x &&
-            componentA.y < componentB.y + componentB.height &&
-            componentA.y + componentA.height > componentB.y;
+    return componentA.x < componentB.x + componentB.width &&
+        componentA.x + componentA.width > componentB.x &&
+        componentA.y < componentB.y + componentB.height &&
+        componentA.y + componentA.height > componentB.y;
 }
 
 function updatePoints(paddle) {
@@ -160,6 +187,7 @@ function render() {
         ball.draw();
     }
     for (let paddle of paddles) {
+        //paddle.move();
         paddle.draw();
         updatePoints(paddle);
     }
@@ -169,31 +197,31 @@ function render() {
 document.addEventListener("keydown", event => {
     //console.log(event.code);
     if (event.code === "KeyS") {
-        leftPaddle.y += PADDLE_SPEED;
+        leftPaddle.move(true);
     }
     if (event.code === "ArrowDown") {
-        rightPaddle.y += PADDLE_SPEED;
+        rightPaddle.move(true)
     }
 
     if (event.code === "KeyW") {
-        leftPaddle.y -= PADDLE_SPEED;
+        leftPaddle.move(false);
     }
     if (event.code === "ArrowUp") {
-        rightPaddle.y -= PADDLE_SPEED;
+        rightPaddle.move(false);
     }
 
     if (event.code === "KeyD") {
-        topPaddle.x += PADDLE_SPEED;
+        topPaddle.move(true);
     }
     if (event.code === "ArrowRight") {
-        bottomPaddle.x += PADDLE_SPEED;
+        bottomPaddle.move(true);
     }
 
     if (event.code === "KeyA") {
-        topPaddle.x -= PADDLE_SPEED;
+        topPaddle.move(false);
     }
     if (event.code === "ArrowLeft") {
-        bottomPaddle.x -= PADDLE_SPEED;
+        bottomPaddle.move(false);
     }
 });
 
