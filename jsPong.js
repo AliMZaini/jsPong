@@ -44,6 +44,7 @@ class Paddle extends Component {
             }
         }
 
+        // disgusting
         //TODO for loop should go through 'paddles' with this paddle popped out.
         // currently i'm just checking that there is only a single collision with this paddle (meaning that it only collided with itself)
         var counter = 0;
@@ -138,6 +139,20 @@ class Ball extends Component {
         if (this.y >= canvasHeight - this.radius || this.y - this.radius <= 0) {
             this.velocity[1] = -this.velocity[1];
         }
+
+        // if ball collides with another ball, it bounces
+        var counter = 0;
+        for (let ball of balls){
+            if (checkCollision(this, ball)){
+                counter++;
+                console.log("ball collision");
+            }
+        }
+        if (counter > 1){
+            console.log("more than one ball collision, so bouncing ball");
+            this.velocity[0] = -this.velocity[0];
+            this.velocity[1] = -this.velocity[1];
+        }
     }
 
     collision(paddle) {
@@ -160,8 +175,8 @@ var bottomPaddle = new Paddle(canvasWidth / 2 - 50, canvasHeight - 30, 100, 30, 
 
 var paddles = [leftPaddle, rightPaddle, topPaddle, bottomPaddle];
 
-var ballOne = new Ball(canvasWidth / 2, canvasHeight / 2, 5, [-3, -2], "blue");
-var ballTwo = new Ball(canvasWidth / 2, canvasHeight / 2, 5, [3, 2], "red");
+var ballOne = new Ball(canvasWidth / 2, canvasHeight / 2, 20, [-10, -7], "blue");
+var ballTwo = new Ball(canvasWidth / 2, canvasHeight / 2, 20, [10, 7], "red");
 
 var balls = [ballOne, ballTwo];
 
